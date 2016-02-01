@@ -6,11 +6,12 @@ package com.beatte.art.imgsrch.rest;
  */
 public class GettyImage {
 
-    public String caption;
-    public DisplaySize[] display_sizes;
+    String caption;
+    String title;
+    DisplaySize[] display_sizes;
 
     public String getTitle() {
-        return display_sizes[0].name;
+        return title;
     }
 
     public String getUrl() {

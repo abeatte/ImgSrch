@@ -2,6 +2,8 @@ package com.beatte.art.imgsrch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,7 +28,7 @@ import retrofit2.Response;
 public class SearchActivity extends AppCompatActivity {
 
     private RESTService mRESTService;
-    private LinearLayoutManager mLayoutManager;
+    private GridLayoutManager mLayoutManager;
     private ImageAdapter mAdapter;
 
     @Bind(R.id.search_list) RecyclerView mList;
@@ -59,7 +61,7 @@ public class SearchActivity extends AppCompatActivity {
         mList.setHasFixedSize(false);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new GridLayoutManager(this, 3);
         mList.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)

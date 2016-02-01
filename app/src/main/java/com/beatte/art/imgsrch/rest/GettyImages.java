@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class GettyImages {
 
-    public int result_count;
-    public GettyImage[] images;
+    int result_count;
+    GettyImage[] images;
 
     public GettyImage[] getImages() {
         return images;
