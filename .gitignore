@@ -5,3 +5,6 @@
 .DS_Store
 /build
 /captures
+
+# This file contains the creds for any 3rd party services
+keys.gradle

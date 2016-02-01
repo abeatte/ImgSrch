@@ -2,9 +2,7 @@ package com.beatte.art.imgsrch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     @Bind(R.id.search_search_text) EditText mSearchText;
     @OnClick(R.id.search_search_btn) public void submit(View view) {
         if (mSearchText.getText().length() > 0) {
-            mRESTService.getImageService().search(mSearchText.getText().toString()).enqueue(new Callback<GettyImages>() {
+            mRESTService.getImageService().search(BuildConfig.GETTY_KEY, mSearchText.getText().toString()).enqueue(new Callback<GettyImages>() {
                 @Override
                 public void onResponse(Response<GettyImages> response) {
                     mAdapter.setData(response.body().getImages());
