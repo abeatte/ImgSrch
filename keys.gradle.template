@@ -1,0 +1,6 @@
+android {
+
+    defaultConfig {
+        buildConfigField 'String', 'GETTY_KEY', '"gettyImagesAPIKey"'
+    }
+}
