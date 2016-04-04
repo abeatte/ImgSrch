@@ -1,5 +1,9 @@
 package com.beatte.art.imgsrch;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,38 +16,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.beatte.art.imgsrch.rest.GettyImage;
-import com.beatte.art.imgsrch.rest.GettyImages;
-import com.beatte.art.imgsrch.rest.RESTService;
+import com.beatte.art.imgsrch.models.GettyImage;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private RESTService mRESTService;
     private GridLayoutManager mLayoutManager;
     private ImageAdapter mAdapter;
+    private BroadcastReceiver mGetImagesReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (ImageGetIntentService.ACTION_GET_IMAGES_SUCCESS.equals(action)) {
+                ArrayList<GettyImage> images = intent.getParcelableArrayListExtra(ImageGetIntentService.EXTRA_IMAGES);
+                mAdapter.setData(images.toArray(new GettyImage[images.size()]));
+            } else if (ImageGetIntentService.ACTION_GET_IMAGES_FAILURE.equals(action)) {
+                Toast.makeText(SearchActivity.this, "Brok'd!", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
 
     @Bind(R.id.search_list) RecyclerView mList;
     @Bind(R.id.search_search_text) EditText mSearchText;
     @OnClick(R.id.search_search_btn) public void submit(View view) {
         if (mSearchText.getText().length() > 0) {
-            mRESTService.getImageService().search(BuildConfig.GETTY_KEY, mSearchText.getText().toString()).enqueue(new Callback<GettyImages>() {
-                @Override
-                public void onResponse(Response<GettyImages> response) {
-                    mAdapter.setData(response.body().getImages());
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Toast.makeText(SearchActivity.this, "Brok'd!", Toast.LENGTH_LONG).show();
-                }
-            });
+            startService(new Intent(SearchActivity.this,
+                    ImageGetIntentService.class)
+                    .setAction(ImageGetIntentService.ACTION_GET_IMAGES)
+                    .putExtra(ImageGetIntentService.EXTRA_SEARCH_TEXT, mSearchText.getText().toString()));
         }
     }
 
@@ -51,7 +58,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        mRESTService = new RESTService();
         ButterKnife.bind(this);
 
         // use this setting to improve performance if you know that changes
@@ -65,6 +71,15 @@ public class SearchActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
         mAdapter = new ImageAdapter(new GettyImage[0]);
         mList.setAdapter(mAdapter);
+
+        registerReceiver(mGetImagesReceiver, new IntentFilter(ImageGetIntentService.ACTION_GET_IMAGES_SUCCESS));
+        registerReceiver(mGetImagesReceiver, new IntentFilter(ImageGetIntentService.ACTION_GET_IMAGES_FAILURE));
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mGetImagesReceiver);
+        super.onDestroy();
     }
 
     // Provide a reference to the views for each data item
@@ -96,14 +111,13 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.image, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.title.setText(mDataset[position].getTitle());
-            Picasso.with(getApplicationContext()).load(mDataset[position].getUrl()).into(holder.image);
+            Picasso.with(getApplicationContext()).load(mDataset[position].getUrl()).placeholder(android.R.drawable.ic_menu_gallery).into(holder.image);
         }
 
         @Override

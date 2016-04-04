@@ -1,7 +1,4 @@
-package com.beatte.art.imgsrch.rest;
-
-import java.util.Arrays;
-import java.util.List;
+package com.beatte.art.imgsrch.models;
 
 /**
  * @author art.beatte

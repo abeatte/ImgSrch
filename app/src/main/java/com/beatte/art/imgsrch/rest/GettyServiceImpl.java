@@ -1,11 +1,10 @@
 package com.beatte.art.imgsrch.rest;
 
-import com.beatte.art.imgsrch.BuildConfig;
+import com.beatte.art.imgsrch.models.GettyImages;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 /**
